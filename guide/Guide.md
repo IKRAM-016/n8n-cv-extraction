@@ -1,47 +1,47 @@
-# 📖 Guide d'Installation
+# 📖 Installation Guide
 
-## 1. Prérequis
+## 1. Prerequisites
 
-- Instance n8n fonctionnelle
-- Compte Gmail avec accès API
-- Compte OpenRouter
-- Base Supabase configurée
+- Working n8n instance
+- Gmail account with API access  
+- OpenRouter account
+- Configured Supabase database
 
-## 2. Configuration des Credentials n8n
+## 2. n8n Credentials Configuration
 
 ### Gmail OAuth2
-1. Aller dans Settings > Credentials
-2. Créer un nouveau credential "Gmail OAuth2 API"
-3. Suivre le processus d'authentification Google
+1. Go to Settings > Credentials
+2. Create a new "Gmail OAuth2 API" credential
+3. Follow Google authentication process
 
 ### OpenRouter
-1. Créer un credential "OpenRouter API"
-2. Ajouter votre clé API OpenRouter
+1. Create an "OpenRouter API" credential  
+2. Add your OpenRouter API key
 
-### Supabase  
-1. Créer un credential "Supabase API"
-2. Remplir l'URL et la clé de service
+### Supabase
+1. Create a "Supabase API" credential
+2. Fill in service URL and key
 
-## 3. Import du Workflow
+## 3. Workflow Import
 
-1. Dans n8n, aller sur Workflows
-2. Cliquer "Import from file"
-3. Sélectionner `workflow_cv_extract.json`
-4. Vérifier que tous les nodes sont connectés
+1. In n8n, go to Workflows
+2. Click "Import from file"
+3. Select `workflow_cv_extract.json`
+4. Verify all nodes are connected
 
-## 4. Test du Workflow
+## 4. Workflow Testing
 
-1. Envoyer un email de test avec CV PDF
-2. Vérifier les logs n8n
-3. Contrôler les données dans Supabase
+1. Send a test email with PDF CV
+2. Check n8n logs
+3. Verify data in Supabase
 
-## 5. Personnalisation
+## 5. Customization
 
-### Modifier le prompt LLM
-Éditer le node "Basic LLM Chain" pour adapter l'extraction
+### Modify LLM Prompt
+Edit the "Basic LLM Chain" node to adapt extraction
 
-### Changer le modèle
-Modifier le node "OpenRouter Chat Model" pour utiliser un autre modèle
+### Change Model
+Modify the "OpenRouter Chat Model" node to use another model
 
-### Adapter les tables
-Ajuster les noms de tables dans les nodes Supabase
+### Adjust Tables
+Update table names in Supabase nodes
