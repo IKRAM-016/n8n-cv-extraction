@@ -1,0 +1,18 @@
+# Clés API et secrets
+config.json
+secrets/
+
+# Logs n8n (si self-hosted)
+logs/
+*.log
+
+# Fichiers temporaires n8n
+tmp/
+*.tmp
+
+# Database n8n locale (si self-hosted) 
+*.db
+*.sqlite
+
+# Backups n8n (si self-hosted)
+backups/

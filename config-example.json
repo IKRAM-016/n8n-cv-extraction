@@ -1,0 +1,36 @@
+{
+  "configuration_guide": "Copiez ce fichier en config.json et remplissez avec vos vraies valeurs",
+  
+  "gmail_config": {
+    "note": "Configurer OAuth2 dans n8n pour Gmail",
+    "scopes": ["https://www.googleapis.com/auth/gmail.readonly"],
+    "filters": "Pièces jointes PDF uniquement"
+  },
+  
+  "openrouter_config": {
+    "api_key": "VOTRE_CLE_API_OPENROUTER_ICI",
+    "model": "mistralai/mistral-7b-instruct:free",
+    "alternative_models": [
+      "anthropic/claude-3-sonnet",
+      "google/gemini-pro"
+    ]
+  },
+  
+  "supabase_config": {
+    "url": "https://votre-projet.supabase.co",
+    "anon_key": "VOTRE_CLE_ANON_ICI",
+    "service_role_key": "VOTRE_CLE_SERVICE_ROLE_ICI",
+    "tables": {
+      "cvs": "cvs",
+      "experiences": "experiences", 
+      "skills": "skills",
+      "education": "education"
+    }
+  },
+  
+  "workflow_settings": {
+    "polling_interval": "everyMinute",
+    "max_attachment_size": "10MB",
+    "supported_formats": ["pdf"]
+  }
+}

@@ -1,0 +1,531 @@
+{
+  "name": "CV extraction sécurisée",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "simple": false,
+        "filters": {},
+        "options": {
+          "downloadAttachments": true
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        -32
+      ],
+      "id": "069a96a4-8789-4f1b-a305-c872cfad7cae",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": "Gmail API Credentials"
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "attachment_0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -32
+      ],
+      "id": "288d1b25-24d3-49e7-ab49-06045d611791",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "823bd38e-5eae-46b8-9eba-b7c13978f321",
+              "name": "text",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        -32
+      ],
+      "id": "31fcb759-a74d-4948-8d4d-ee9e967c32e8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an HR expert, you are given a detailed CV text extract. Extract the following information in structured JSON format:\n- Name\n- Email\n- Telephone\n- Experience (array)\n- Skills (array)\n- Education (array)\n\nThis is the CV text: {{ $json.text }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        672,
+        -32
+      ],
+      "id": "69f4be1f-deaf-4f5f-a572-e16e5f809b76",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "mistralai/mistral-7b-instruct:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        624,
+        256
+      ],
+      "id": "7e6477ee-f468-4b77-9ec4-edd05a86f3fc",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": "OpenRouter API Credentials"
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"Name\": \"\",\n  \"Telephone\": \"\",\n  \"Email\": \"\",\n  \"Education\": [],\n  \"Skills\": [], \n  \"Experience\": []\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        832,
+        256
+      ],
+      "id": "ad0e0b63-9954-4ce3-af9d-e5aaf61bce25",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/rest/v1/cvs",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $env.SUPABASE_ANON_KEY }}"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer {{ $env.SUPABASE_ANON_KEY }}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "name",
+              "value": "={{ $json.output.Name }}"
+            },
+            {
+              "name": "telephone",
+              "value": "={{ $json.output.Telephone }}"
+            },
+            {
+              "name": "email",
+              "value": "={{ $json.output.Email }}"
+            },
+            {
+              "name": "raw_data",
+              "value": "={{ $json }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1024,
+        -32
+      ],
+      "id": "1e01b9dc-36a3-40be-8f3d-c9c967811f05",
+      "name": "Save Candidate"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "040a2a7f-c3f6-420e-90d7-40d9cec4391b",
+              "name": "exp",
+              "value": "={{ $('Basic LLM Chain').item.json.output.Experience }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        -144
+      ],
+      "id": "4cc72589-8226-4637-bac7-c82a97a75e0a",
+      "name": "Prepare Experiences"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "exp",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        -144
+      ],
+      "id": "9219ab56-b820-41c9-98a0-250da830a993",
+      "name": "Split Experiences"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "040a2a7f-c3f6-420e-90d7-40d9cec4391b",
+              "name": "skl",
+              "value": "={{ $('Basic LLM Chain').item.json.output.Skills }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        48
+      ],
+      "id": "18723148-23fa-4fa2-a730-3e3d0d2f7a08",
+      "name": "Prepare Skills"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "skl",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        48
+      ],
+      "id": "17f32b18-0060-4cb2-b4a8-463e39e1db52",
+      "name": "Split Skills"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "040a2a7f-c3f6-420e-90d7-40d9cec4391b",
+              "name": "educ",
+              "value": "={{ $('Basic LLM Chain').item.json.output.Education }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1248,
+        240
+      ],
+      "id": "595abf84-9018-4b6d-8649-f77cb13ce038",
+      "name": "Prepare Education"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "educ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1472,
+        240
+      ],
+      "id": "7ff5463b-fb95-41a6-b26e-e8bf6d0675a9",
+      "name": "Split Education"
+    },
+    {
+      "parameters": {
+        "tableId": "skills",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "cv_id",
+              "fieldValue": "={{ $('Save Candidate').item.json[0].id }}"
+            },
+            {
+              "fieldId": "skill",
+              "fieldValue": "={{ $json.skl }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        48
+      ],
+      "id": "19f73128-c1b3-4405-a0a4-766c9c959137",
+      "name": "Save Skills",
+      "credentials": {
+        "supabaseApi": "Supabase Credentials"
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "education",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "cv_id",
+              "fieldValue": "={{ $('Save Candidate').item.json[0].id }}"
+            },
+            {
+              "fieldId": "institution",
+              "fieldValue": "={{ $json.educ }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        240
+      ],
+      "id": "487c6a08-6186-4f93-9e72-ec3e9d928427",
+      "name": "Save Education",
+      "credentials": {
+        "supabaseApi": "Supabase Credentials"
+      }
+    },
+    {
+      "parameters": {
+        "tableId": "experiences",
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "cv_id",
+              "fieldValue": "={{ $('Save Candidate').item.json[0].id }}"
+            },
+            {
+              "fieldId": "experience",
+              "fieldValue": "={{ $json.exp }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        1696,
+        -144
+      ],
+      "id": "59c5ddca-0a11-438b-b283-55b20f1c4af3",
+      "name": "Save Experiences",
+      "credentials": {
+        "supabaseApi": "Supabase Credentials"
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Save Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Candidate": {
+      "main": [
+        [
+          {
+            "node": "Prepare Experiences",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Skills",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare Education",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Experiences": {
+      "main": [
+        [
+          {
+            "node": "Split Experiences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Experiences": {
+      "main": [
+        [
+          {
+            "node": "Save Experiences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Skills": {
+      "main": [
+        [
+          {
+            "node": "Split Skills",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Skills": {
+      "main": [
+        [
+          {
+            "node": "Save Skills",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Education": {
+      "main": [
+        [
+          {
+            "node": "Split Education",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Education": {
+      "main": [
+        [
+          {
+            "node": "Save Education",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6b95cfa9-2409-491f-8f1e-05dd06d1fe48",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "INSTANCE_ID_PLACEHOLDER"
+  },
+  "id": "6qf9JM4cAdQErH7f",
+  "tags": []
+}

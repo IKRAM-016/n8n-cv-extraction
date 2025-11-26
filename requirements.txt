@@ -1,0 +1,4 @@
+# Nodes n8n supplémentaires nécessaires
+@n8n/n8n-nodes-langchain
+n8n-nodes-base
+
