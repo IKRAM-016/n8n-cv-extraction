@@ -1,43 +1,45 @@
-# 🧠 CV Extraction - Automatisation n8n
+# 🧠 CV Extraction – n8n Automation
 
-Système automatique d'extraction et d'analyse de CV via email utilisant n8n et IA.
+Automatic system for extracting and analyzing CVs via email using n8n and AI.
 
-## 🚀 Fonctionnalités
+## 🚀 Features
 
-- 📧 **Déclenchement par email** : Surveillance automatique de la boîte Gmail
-- 📄 **Extraction PDF** : Analyse des CV reçus en pièces jointes
-- 🤖 **Analyse IA** : Extraction structurée des informations avec LLM
-- 💾 **Stockage Supabase** : Sauvegarde dans une base de données
-- 🔄 **Workflow automatisé** : Traitement en temps réel
+- 📧 **Email Trigger**: Automatic monitoring of the Gmail inbox
+- 📄 **PDF Extraction**: Analysis of CVs received as attachments  
+- 🤖 **AI Analysis**: Structured information extraction using an LLM
+- 💾 **Supabase Storage**: Saves results into a database
+- 🔄 **Automated Workflow**: Real-time processing
 
 ## 🛠️ Technologies
 
-- **n8n** : Orchestration du workflow
-- **OpenRouter** : Modèles de langage (Mistral 7B)
-- **Supabase** : Base de données
-- **Gmail API** : Réception des emails
+- **n8n** – Workflow orchestration
+- **OpenRouter** – Language models (Mistral 7B)
+- **Supabase** – Database storage
+- **Gmail API** – Email reception
 
-## ⚡ Installation Rapide
+## ⚡ Quick Installation
 
-1. **Importer le workflow** dans n8n
-2. **Configurer les credentials** (voir `config-example.json`)
-3. **Démarrer le workflow**
+1. Import the workflow into n8n
+2. Configure the credentials (see `config-example.json`)
+3. Start the workflow
 
-## 📋 Configuration Requise
+## 📋 Required Configuration
 
-- Compte n8n (self-hosted ou cloud)
-- Clé API OpenRouter
-- Compte Supabase
-- Accès Gmail API
+- n8n account (self-hosted or cloud)
+- OpenRouter API key  
+- Supabase account
+- Gmail API access
 
-## 🔧 Utilisation
+## 🔧 Usage
 
-Le workflow s'active automatiquement à la réception d'un email avec un CV en pièce jointe. Les données extraites sont :
-- 📝 Informations personnelles (nom, email, téléphone)
-- 🎓 Formation et éducation
-- 💼 Expériences professionnelles  
-- 🛠️ Compétences techniques
+When an email with an attached CV is received, the workflow automatically triggers.
+
+The extracted information includes:
+- 📝 **Personal details** (name, email, phone)
+- 🎓 **Education and academic background**
+- 💼 **Professional experience** 
+- 🛠️ **Technical skills**
 
 ---
 
-*Pour la configuration détaillée, voir [guide/Guide.md](guide/Guide.md)*
+*For detailed setup instructions, see [guide/Guide.md](guide/Guide.md)*
